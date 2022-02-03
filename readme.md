@@ -1,0 +1,1 @@
+Simplest ray-tracer based on https://raytracing.github.io/books/RayTracingInOneWeekend.html, implemented in C#
