@@ -6,6 +6,12 @@ namespace RayTracerCore
 {
     public class RayTracer
     {
+        private Camera cam;
+        public RayTracer(Camera cam) 
+        { 
+            this.cam = cam;
+        }
+
         public Color RayTrace(Ray r, World world, int depth)
         {
             if (depth <= 0)

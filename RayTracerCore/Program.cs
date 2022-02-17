@@ -15,22 +15,18 @@ namespace RayTracerCore
             var aspectRatio = 16.0 / 9.0;
             int image_width = 1024;
             int image_height = (int)(image_width / aspectRatio);
-            var viewport_height = 2.0;
-            var viewport_width = aspectRatio * viewport_height;
-            var focal_length = 1.0;
-
             var origin = new Point(0, 0, 0);
-            var horizontal = new Vector(viewport_width, 0, 0);
-            var vertical = new Vector(0, viewport_height, 0);
-
-            var lowerLeftCorner = origin - horizontal / 2 - vertical / 2 - new Vector(0, 0, focal_length);
-
+              
 
             World world = new World();
             Hittable sphere1 = new Sphere(new Vector(0.0, 0.0, -1.0), 0.5, new Lambertian(new Color(0.8, 0.0, 0.0)));
-            Hittable sphere2 = new Sphere(new Vector(0.0, -100.5, -1), 100, new Lambertian(new Color(0.1, 0.6, 0.5)));
+            Hittable sphere2 = new Sphere(new Vector(-1.0, 0.0, -1.0), 0.5, new Lambertian(new Color(0.1, 0.6, 0.5)));
+            Hittable ground = new Sphere(new Vector(0.0, -100.5, -1.0), 100.0, new Lambertian(new Color(0.8, 0.8, 0.0)));
+
             world.AddObjectToWorld(sphere1);
             world.AddObjectToWorld(sphere2);
+            world.AddObjectToWorld(ground);
+
 
             Console.WriteLine("Working...");
             StreamWriter sw = new StreamWriter("image_aa4.ppm");
@@ -40,9 +36,12 @@ namespace RayTracerCore
             Console.Out.WriteLine(image_width + " " + image_height);
             Console.Out.WriteLine("255\n");
 
-            RayTracer tracer = new RayTracer();
+            var lookFrom = new Vector(3,3,2);
+            var lookAt = new Vector(0, 0, -1);
+            Camera cam = new Camera(20.0, aspectRatio, lookFrom, lookAt, 2.0, (lookFrom-lookAt).Length());
+            RayTracer tracer = new RayTracer(cam);
             int depth = 20;
-            var samples = 10;
+            var samples = 60;
 
             for (int j = image_height - 1; j >= 0; j--)
             {
@@ -54,7 +53,8 @@ namespace RayTracerCore
                         double u = (double)(i + Vector.RandomDouble(-0.5, 0.5)) / (image_width - 1);
                         double v = (double)(j + Vector.RandomDouble(-0.5, 0.5)) / (image_height - 1);
 
-                        Ray ray = new Ray(origin, lowerLeftCorner + u * horizontal + v * vertical - origin);
+                        //Ray ray = new Ray(origin, lowerLeftCorner + u * horizontal + v * vertical - origin);
+                        Ray ray = cam.GetRay(u, v);
                         color += tracer.RayTrace(ray, world, depth);
                     }
 
@@ -69,6 +69,11 @@ namespace RayTracerCore
             Console.SetOut(sw);
 
             Console.Out.WriteLine("Done");
+        }
+
+        public static double DegreesToRadians(double degrees)
+        { 
+            return degrees * Math.PI / 180.0;
         }
 
         static void WriteColor(Color color, int samples)

@@ -32,6 +32,13 @@ namespace RayTracerCore
             return (v1.e[0] * v2.e[0]) + (v1.e[1] * v2.e[1]) + (v1.e[2] * v2.e[2]);
         }
 
+        public static Vector Cross(Vector v1, Vector v2)
+        {
+            return new Vector(v1.e[1] * v2.e[2] - v1.e[2] * v2.e[1],
+                                v1.e[2] * v2.e[0] - v1.e[0] * v2.e[2],
+                                v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]);
+        }
+
         public static Vector operator +(Vector v1, Vector v2)
                 => new Vector(v1.e[0] + v2.e[0], v1.e[1] + v2.e[1], v1.e[2] + v2.e[2]);
          
@@ -74,6 +81,20 @@ namespace RayTracerCore
             {
                 Vector p = RandomUnitVector();
                 if (p.LengthSquared() >= 1) continue;
+
+                return p;
+            }
+        }
+
+        public static Vector RandomInUnitDisk()
+        {
+            while (true)
+            {
+                var p = new Vector(RandomDouble(-1,1), RandomDouble(-1,1), 0);
+                if (p.LengthSquared() >= 1)
+                {
+                    continue;
+                }
 
                 return p;
             }
